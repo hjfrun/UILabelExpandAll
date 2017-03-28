@@ -1,2 +1,2 @@
 # UILabelExpandAll
-collapse and expand UILabel
+Collapse and expand UILabel
