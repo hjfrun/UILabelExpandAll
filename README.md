@@ -1,7 +1,7 @@
 # UILabelExpandAll
 Collapse and expand UILabel
 
-
+未作安全性保证，只是一个简单实现。
 
 效果如下图所示：
 

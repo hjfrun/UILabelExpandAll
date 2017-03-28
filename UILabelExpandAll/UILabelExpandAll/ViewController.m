@@ -45,32 +45,32 @@
     
     self.string = string;
     
-    NSArray *textChunks = [self splitWithString:string size:CGSizeMake(335, ceil(self.label.font.lineHeight))];
+    CGFloat screenW = [UIScreen mainScreen].bounds.size.width;
     
+    NSArray *textLines = [self splitWithString:string size:CGSizeMake(screenW - 20 * 2, ceil(self.label.font.lineHeight))];
     
     NSMutableString *stringM = [NSMutableString string];
-    [stringM appendString:textChunks[0]];
-    [stringM appendString:textChunks[1]];
+    [stringM appendString:textLines[0]];
+    [stringM appendString:textLines[1]];
     
     NSString *expandText = @"...全文";
     
     CGFloat expandTextWidth = [self calculateLabelWidthWithString:expandText height:ceil(self.label.font.lineHeight)];
     
-    CGFloat thirdLineTextWidth = 335 - expandTextWidth;
-    NSArray *thirdLineArray = [self splitWithString:textChunks[2] size:CGSizeMake(thirdLineTextWidth, ceil(self.label.font.lineHeight))];
+    CGFloat thirdLineRemainWidth = screenW - 20 * 2 - expandTextWidth;
+    NSArray *thirdLineArray = [self splitWithString:textLines[2] size:CGSizeMake(thirdLineRemainWidth, ceil(self.label.font.lineHeight))];
     [stringM appendString:thirdLineArray[0]];
-    
     [stringM appendString:expandText];
     
-    NSMutableAttributedString *mutableAttriString = [[NSMutableAttributedString alloc] initWithString:stringM attributes:self.attrs];
-    [mutableAttriString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:[stringM rangeOfString:@"全文"]];
-    self.collapsedString = mutableAttriString;
+    NSMutableAttributedString *collapsedString = [[NSMutableAttributedString alloc] initWithString:stringM attributes:self.attrs];
+    [collapsedString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:[stringM rangeOfString:@"全文"]];
+    self.collapsedString = collapsedString;
     
-    self.label.attributedText = mutableAttriString;
+    self.label.attributedText = collapsedString;
+    
     
     self.label.layer.borderColor = [UIColor greenColor].CGColor;
     self.label.layer.borderWidth = 1.f;
-    
 }
 
 - (void)labelTap:(UITapGestureRecognizer *)tap
@@ -106,7 +106,6 @@
     CFRange fitRange;
     
     while (attriStringM.length) {
-        
         frameSetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attriStringM);
         
         CTFramesetterSuggestFrameSizeWithConstraints(frameSetter, CFRangeMake(0, 0), NULL, size, &fitRange);
@@ -117,7 +116,6 @@
         [textLines addObject:textLine];
         
         [attriStringM setAttributedString:[attriStringM attributedSubstringFromRange:NSMakeRange(fitRange.length, attriStringM.string.length - fitRange.length)]];
-        
     }
     
     return textLines;
