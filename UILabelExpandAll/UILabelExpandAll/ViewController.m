@@ -8,17 +8,15 @@
 
 #import "ViewController.h"
 #import <CoreText/CoreText.h>
+#import "UILabel+Collapse.h"
 
 @interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UILabel *label;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightConstraint;
 @property (nonatomic, strong) UITapGestureRecognizer *tap;
-
 @property (nonatomic, strong) NSDictionary *attrs;
-
 @property (nonatomic, strong) NSString *string;
-@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
 @property (nonatomic, strong) NSAttributedString *collapsedString;
 
 @end
@@ -77,12 +75,8 @@
 
 - (void)labelTap:(UITapGestureRecognizer *)tap
 {
-    self.expanded = !self.isExpanded;
-    if (self.isExpanded) {
-        self.label.attributedText = [[NSAttributedString alloc] initWithString:self.string attributes:self.attrs];
-    } else {
-        self.label.attributedText = self.collapsedString;
-    }
+    self.label.expanded = !self.label.expanded;
+    self.label.attributedText = self.label.expanded ? [[NSAttributedString alloc] initWithString:self.string attributes:self.attrs] : self.collapsedString;
 }
 
 - (CGFloat)calculateLabelWidthWithString:(NSString *)string height:(CGFloat)height
