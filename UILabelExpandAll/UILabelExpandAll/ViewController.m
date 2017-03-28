@@ -18,6 +18,8 @@
 @property (nonatomic, strong) NSDictionary *attrs;
 
 @property (nonatomic, strong) NSString *string;
+@property (nonatomic, assign, getter=isExpanded) BOOL expanded;
+@property (nonatomic, strong) NSAttributedString *collapsedString;
 
 @end
 
@@ -42,6 +44,7 @@
                        };
     
     NSString *string = @"豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。时维九月，序属三秋。潦水尽而寒潭清，烟光凝而暮山紫。俨骖騑于上路，访风景于崇阿；临帝子之长洲，得天人之旧馆。层峦耸翠，上出重霄；飞阁流丹，下临无地。鹤汀凫渚，穷岛屿之萦回；桂殿兰宫，即冈峦之体势。";
+    
     self.string = string;
     
     NSArray *textChunks = [self splitWithString:string size:CGSizeMake(335, ceil(self.label.font.lineHeight))];
@@ -63,6 +66,7 @@
     
     NSMutableAttributedString *mutableAttriString = [[NSMutableAttributedString alloc] initWithString:stringM attributes:self.attrs];
     [mutableAttriString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:[stringM rangeOfString:@"全文"]];
+    self.collapsedString = mutableAttriString;
     
     self.label.attributedText = mutableAttriString;
     
@@ -73,9 +77,12 @@
 
 - (void)labelTap:(UITapGestureRecognizer *)tap
 {
-    NSLog(@"label tap");
-    
-    self.label.attributedText = [[NSAttributedString alloc] initWithString:self.string attributes:self.attrs];
+    self.expanded = !self.isExpanded;
+    if (self.isExpanded) {
+        self.label.attributedText = [[NSAttributedString alloc] initWithString:self.string attributes:self.attrs];
+    } else {
+        self.label.attributedText = self.collapsedString;
+    }
 }
 
 - (CGFloat)calculateLabelWidthWithString:(NSString *)string height:(CGFloat)height
@@ -97,9 +104,9 @@
     
     NSMutableAttributedString *attriStringM = [[NSMutableAttributedString alloc] initWithString:string attributes:self.attrs];
     
-    NSMutableArray *textChunks = @[].mutableCopy;
+    NSMutableArray *textLines = @[].mutableCopy;
     
-    NSString *chunk = [NSString string];
+    NSString *textLine = [NSString string];
     
     CTFramesetterRef frameSetter;
     CFRange fitRange;
@@ -111,15 +118,15 @@
         CTFramesetterSuggestFrameSizeWithConstraints(frameSetter, CFRangeMake(0, 0), NULL, size, &fitRange);
         CFRelease(frameSetter);
         
-        chunk = [[attriStringM attributedSubstringFromRange:NSMakeRange(0, fitRange.length)] string];
+        textLine = [[attriStringM attributedSubstringFromRange:NSMakeRange(0, fitRange.length)] string];
         
-        [textChunks addObject:chunk];
+        [textLines addObject:textLine];
         
         [attriStringM setAttributedString:[attriStringM attributedSubstringFromRange:NSMakeRange(fitRange.length, attriStringM.string.length - fitRange.length)]];
         
     }
     
-    return textChunks;
+    return textLines;
 }
 
 
