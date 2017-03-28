@@ -7,4 +7,4 @@ Collapse and expand UILabel
 
 
 
-![2017-03-28 20_58_28](./2017-03-28 20_58_28.gif)
+![2017-03-28 20_58_28](https://github.com/hjfrun/UILabelExpandAll/blob/master/2017-03-28%2020_58_28.gif)
